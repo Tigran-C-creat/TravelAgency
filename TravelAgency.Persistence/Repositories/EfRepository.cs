@@ -1,4 +1,5 @@
 ﻿using TravelAgency.Domain.Interfaces;
+using TravelAgency.Shared.Exeptions;
 
 namespace TravelAgency.Persistence.Repositories
 {
@@ -15,6 +16,17 @@ namespace TravelAgency.Persistence.Repositories
 
             return await _context.Set<T>()
                 .FindAsync(new object[] { id }, token);
+        }
+
+        public async Task<T> GetOrThrowAsync<T>(Guid id, CancellationToken? cancellationToken = null) where T : class
+        {
+            var token = cancellationToken ?? CancellationToken.None;
+            var entity = await _context.Set<T>().FindAsync(new object[] { id }, token);
+
+            if (entity == null)
+                throw new NotFoundException($"{typeof(T).Name} with ID {id} not found.");
+
+            return entity;
         }
     }
 }
