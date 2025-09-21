@@ -5,9 +5,14 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using TravelAgency.Application.Commands.Login;
 using TravelAgency.Application.Interfaces;
+using TravelAgency.Application.Profiles;
+using TravelAgency.Application.Queries.GetEmployee;
+using TravelAgency.Domain.Interfaces;
 using TravelAgency.Infrastructure.Configuration;
 using TravelAgency.Infrastructure.Services;
+using TravelAgency.Middleware;
 using TravelAgency.Persistence;
+using TravelAgency.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -48,8 +53,14 @@ builder.Services.AddDbContext<TravelAgencyContext>(options =>
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(LoginCommandHandler).Assembly);
+    cfg.RegisterServicesFromAssemblies(typeof(LoginCommandHandler).Assembly,
+                                    typeof(GetEmployeeQueryHandler).Assembly
+      );
 });
+
+builder.Services.AddScoped<IRepository, EfRepository>();
+
+builder.Services.AddAutoMapper(typeof(EmployeeProfile));
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -77,7 +88,7 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
-}); ;
+});
 
 var app = builder.Build();
 
@@ -90,6 +101,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 
