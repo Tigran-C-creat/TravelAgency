@@ -14,5 +14,7 @@
         /// <returns></returns>
         Task<T?> GetAsync<T>(Guid id, CancellationToken? cancellationToken = null) 
             where T : class;
+        Task<T> GetOrThrowAsync<T>(Guid id, CancellationToken? cancellationToken = null) 
+            where T : class;
     }
 }
