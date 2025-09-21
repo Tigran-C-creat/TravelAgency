@@ -1,15 +1,15 @@
 ﻿using MediatR;
-using TravelAgency.Domain.Models;
+using TravelAgency.Application.DTOs.Response;
 
 namespace TravelAgency.Application.Queries.GetEmployee
 {
-    public class GetEmployeeQuery : IRequest<EmployeeModel>
+    public class GetEmployeeQuery : IRequest<EmployeeDto>
     {
         /// <summary>
-        /// параметр для запроса на получение одного сайта
+        /// параметр для запроса на получение одного employee
         /// </summary>
         /// <param name="id">Идентификатор сайта</param>
-        public GetEmployeeQuery(Guid id)
+        public GetEmployeeQuery(Guid id) 
         {
             Id = id;
         }

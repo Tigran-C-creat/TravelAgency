@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using TravelAgency.Application.DTOs.Response;
 using TravelAgency.Application.Queries.GetEmployee;
 using TravelAgency.Domain.Enums;
-using TravelAgency.Domain.Models;
+
 
 namespace TravelAgency.Controllers
 {
@@ -25,12 +26,12 @@ namespace TravelAgency.Controllers
         }
 
         /// <summary>
-        /// Возвращает сайт по идентификатору
+        /// Возвращает Employee по идентификатору
         /// </summary>
-        /// <param name="id">Идентификатор сайта</param>
+        /// <param name="id">Идентификатор Employee</param>
         [Authorize(Roles = TravelAgencyRole.ReadOrWrite)]
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(EmployeeModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(EmployeeDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetAsync(Guid id)
