@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using System.Text;
 using TravelAgency.Application.Commands.Login;
 using TravelAgency.Application.Interfaces;
@@ -61,6 +62,11 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddScoped<IRepository, EfRepository>();
 
 builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+
+builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
 builder.Services.AddEndpointsApiExplorer();
 

@@ -9,10 +9,12 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.36" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TravelAgency.Domain\TravelAgency.Domain.csproj" />
+    <ProjectReference Include="..\TravelAgency.Shared\TravelAgency.Shared.csproj" />
   </ItemGroup>
 
 </Project>
