@@ -17,19 +17,34 @@ COPY ["TravelAgency.Application/TravelAgency.Application.csproj", "TravelAgency.
 COPY ["TravelAgency.Domain/TravelAgency.Domain.csproj", "TravelAgency.Domain/"]
 COPY ["TravelAgency.Shared/TravelAgency.Shared.csproj", "TravelAgency.Shared/"]
 COPY ["TravelAgency.Persistence/TravelAgency.Persistence.csproj", "TravelAgency.Persistence/"]
+
+# Восстанавливаем зависимости
 RUN dotnet restore "./TravelAgency/TravelAgency.csproj"
+
+# Копируем весь исходный код
 COPY . .
+
+# Сборка проекта
 WORKDIR "/src/TravelAgency"
 RUN dotnet build "./TravelAgency.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# Публикация проекта
 FROM build AS publish
 RUN dotnet publish "./TravelAgency.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+# Сборка проекта
 FROM base AS final
 WORKDIR /app
-RUN apt-get update && apt-get install -y curl
-ENV ASPNETCORE_ENVIRONMENT=Development
+
+# Создаём безопасного пользователя
+RUN useradd --home-dir /home/appuser --create-home --uid 1000 --user-group appuser \
+    && chown -R appuser:appuser /app
+
+# Копируем опубликованные файлы
 COPY --from=publish /app/publish .
+
+# Переключаемся на безопасного пользователя
+USER appuser
+
+# Точка входа
 ENTRYPOINT ["dotnet", "TravelAgency.dll"]
