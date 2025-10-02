@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -16,7 +17,17 @@ using TravelAgency.Persistence;
 using TravelAgency.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
 builder.Services.AddControllers();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
+    .SetApplicationName("TravelAgency");
+
 
 // Настройка аутентификации (например, JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -63,8 +74,28 @@ builder.Services.AddScoped<IRepository, EfRepository>();
 
 builder.Services.AddAutoMapper(typeof(EmployeeProfile));
 
+var redisConnection = builder.Configuration["Redis__Connection"];
+                   
+
+Console.WriteLine($"Redis connection string: {redisConnection}");
+
+if (string.IsNullOrWhiteSpace(redisConnection))
+    throw new InvalidOperationException("Redis connection string is not configured.");
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+{
+    Console.WriteLine($"Connecting to Redis: {redisConnection}");
+
+    try
+    {
+        return ConnectionMultiplexer.Connect(redisConnection);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Redis connection failed: {ex.Message}");
+        throw;
+    }
+});
 
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
@@ -98,12 +129,23 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// ? Применение миграций при запуске
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TravelAgencyContext>();
+    db.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
-
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -115,5 +157,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.Run();

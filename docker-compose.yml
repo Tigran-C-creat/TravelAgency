@@ -1,0 +1,55 @@
+services:
+  travelagency:
+    image: travelagency:latest
+    build:
+      context: .
+      dockerfile: TravelAgency/Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+    ports:
+      - "5000:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    volumes:
+      - ./keys:/root/.aspnet/DataProtection-Keys
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+    #   interval: 30s     
+    #   timeout: 10s      
+    #   retries: 3         
+    #   start_period: 60s
+
+  db:
+    image: postgres:15
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: travel
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD-SHELL", "echo 'healthy' || exit 0"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "ping"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+
+volumes:
+  pgdata:
