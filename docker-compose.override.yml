@@ -1,18 +1,18 @@
 services:
   travelagency:
-    restart: unless-stopped
+  # Build the image from source code
     build:
       context: .
       dockerfile: TravelAgency/Dockerfile
       args:
-        BUILD_CONFIGURATION: Debug
+        BUILD_CONFIGURATION: Debug # Build in Debug mode for development
+   # Environment variables available inside the container
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=travel;Username=postgres;Password=password
       - Redis__Connection=redis:6379
-    ports:
-      - "5000:80"
+  # Startup order: db and redis will be started before travelagency
     depends_on:
       - db
       - redis
