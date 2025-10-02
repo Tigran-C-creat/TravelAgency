@@ -24,11 +24,6 @@ builder.Configuration
 
 builder.Services.AddControllers();
 
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
-    .SetApplicationName("TravelAgency");
-
-
 // Настройка аутентификации (например, JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -74,28 +69,10 @@ builder.Services.AddScoped<IRepository, EfRepository>();
 
 builder.Services.AddAutoMapper(typeof(EmployeeProfile));
 
-var redisConnection = builder.Configuration["Redis__Connection"];
-                   
-
-Console.WriteLine($"Redis connection string: {redisConnection}");
-
-if (string.IsNullOrWhiteSpace(redisConnection))
-    throw new InvalidOperationException("Redis connection string is not configured.");
+var redisConnection = builder.Configuration["Redis__Connection"] ?? throw new InvalidOperationException("Redis connection string is not configured.");
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-{
-    Console.WriteLine($"Connecting to Redis: {redisConnection}");
-
-    try
-    {
-        return ConnectionMultiplexer.Connect(redisConnection);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Redis connection failed: {ex.Message}");
-        throw;
-    }
-});
+    ConnectionMultiplexer.Connect(redisConnection));
 
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
