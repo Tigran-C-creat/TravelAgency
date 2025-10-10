@@ -24,6 +24,8 @@ builder.Configuration
 
 builder.Services.AddControllers();
 
+builder.Services.AddHealthChecks();
+
 // Настройка аутентификации (например, JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -135,6 +137,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//app.MapGet("/health", () => Results.Ok("Healthy"));
+app.MapHealthChecks("/health");
 
 app.Run();

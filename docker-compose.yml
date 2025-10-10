@@ -14,12 +14,12 @@ services:
       - db
       - redis
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
-    #   interval: 30s     
-    #   timeout: 10s      
-    #   retries: 3         
-    #   start_period: 60s
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 30s     
+      timeout: 10s      
+      retries: 3         
+      start_period: 60s
 
   db:
     image: postgres:15
@@ -32,22 +32,22 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD-SHELL", "echo 'healthy' || exit 0"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   redis:
     image: redis:7
     ports:
       - "6379:6379"
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD", "redis-cli", "ping"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:
