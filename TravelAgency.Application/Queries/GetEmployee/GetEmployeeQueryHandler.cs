@@ -33,10 +33,7 @@ namespace TravelAgency.Application.Queries.GetEmployee
                 },
                 TimeSpan.FromMinutes(10)
             );
-
-
         }
-
     }
 }
 
