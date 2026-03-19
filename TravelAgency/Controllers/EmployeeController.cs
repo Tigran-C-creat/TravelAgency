@@ -38,9 +38,9 @@ namespace TravelAgency.Controllers
         [ProducesResponseType(typeof(EmployeeDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetAsync(Guid id)
+        public async Task<IActionResult> GetAsync(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _mediator.Send(new GetEmployeeQuery(id)));
+            return Ok(await _mediator.Send(new GetEmployeeQuery(id), cancellationToken));
         }
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace TravelAgency.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Guid), (int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateEmployeeCommand command)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateEmployeeCommand command, CancellationToken cancellationToken)
         {
-            var employeeId = await _mediator.Send(command);
+            var employeeId = await _mediator.Send(command, cancellationToken);
             return Created(employeeId.ToString(), employeeId);
         }
     }
