@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using System.Text;
+using TravelAgency.Application.Commands.Employee;
 using TravelAgency.Application.Commands.Login;
 using TravelAgency.Application.Interfaces;
 using TravelAgency.Application.Profiles;
@@ -66,6 +66,8 @@ builder.Services.AddMediatR(cfg =>
                                     typeof(GetEmployeeQueryHandler).Assembly
       );
 });
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateEmployeeCommandHandler).Assembly));
 
 builder.Services.AddScoped<IRepository, EfRepository>();
 

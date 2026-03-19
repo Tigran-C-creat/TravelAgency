@@ -3,6 +3,7 @@ using Npgsql;
 using StackExchange.Redis;
 using System.Data.Common;
 using TravelAgency.Shared.Exeptions;
+using FluentValidation;
 
 namespace TravelAgency.Middleware
 {
@@ -28,6 +29,10 @@ namespace TravelAgency.Middleware
             catch (LogicException ex)
             {
                 await HandleExceptionAsync(context, (int)ex.StatusCode, "Business Logic Error", ex.Message, $"https://httpstatuses.com/{(int)ex.StatusCode}");
+            }
+            catch (ValidationException ex) 
+            {
+                await HandleValidationExceptionAsync(context, ex);
             }
             catch (RedisConnectionException ex)
             {
@@ -60,6 +65,31 @@ namespace TravelAgency.Middleware
 
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/problem+json";
+            await context.Response.WriteAsJsonAsync(problem);
+        }
+
+        private static async Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.ContentType = "application/problem+json";
+
+            // Собираем все ошибки валидации
+            var errors = exception.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            var problem = new ValidationProblemDetails(errors)
+            {
+                Type = "https://httpstatuses.com/400",
+                Title = "Validation Error",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = "One or more validation errors occurred.",
+                Instance = context.Request.Path
+            };
+
             await context.Response.WriteAsJsonAsync(problem);
         }
     }
