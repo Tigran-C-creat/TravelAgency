@@ -10,6 +10,7 @@ namespace TravelAgency.Persistence.Repositories
         {
             _context = context;
         }
+
         public async Task<T?> GetAsync<T>(Guid id, CancellationToken? cancellationToken = null) where T : class
         {
             var token = cancellationToken ?? CancellationToken.None;
@@ -27,6 +28,16 @@ namespace TravelAgency.Persistence.Repositories
                 throw new NotFoundException($"{typeof(T).Name} with ID {id} not found.");
 
             return entity;
+        }
+
+        public async Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
+        {
+            await _context.Set<T>().AddAsync(entity, cancellationToken);
+        }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

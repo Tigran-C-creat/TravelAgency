@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using TravelAgency.Application.Commands.Employee;
 using TravelAgency.Application.DTOs.Response;
 using TravelAgency.Application.Queries.GetEmployee;
 using TravelAgency.Domain.Enums;
@@ -12,6 +13,9 @@ namespace TravelAgency.Controllers
     /// <summary>
     /// Контроллер для работы с Employee
     /// </summary>
+    [ApiController]
+    [Authorize]
+    [Route("api/[controller]")]
     public class EmployeeController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -37,6 +41,19 @@ namespace TravelAgency.Controllers
         public async Task<IActionResult> GetAsync(Guid id)
         {
             return Ok(await _mediator.Send(new GetEmployeeQuery(id)));
+        }
+
+        /// <summary>
+        /// Cоздаёт employee
+        /// </summary>
+        [Authorize(Roles = TravelAgencyRole.Write)]
+        [HttpPost]
+        [ProducesResponseType(typeof(Guid), (int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateEmployeeCommand command)
+        {
+            var employeeId = await _mediator.Send(command);
+            return Created(employeeId.ToString(), employeeId);
         }
     }
 }
