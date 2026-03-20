@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Interfaces;
-using TravelAgency.Shared.Constants;
 using FluentValidation;
 
 namespace TravelAgency.Application.Commands.Employee;
@@ -10,16 +8,13 @@ namespace TravelAgency.Application.Commands.Employee;
 public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeCommand, Guid>
 {
     private readonly IRepository _repository;
-    private readonly IMapper _mapper;
     private readonly IRedisCacheService _cache;
 
     public CreateEmployeeCommandHandler(
         IRepository repository,
-        IMapper mapper,
         IRedisCacheService cache)
     {
         _repository = repository;
-        _mapper = mapper;
         _cache = cache;
     }
 
