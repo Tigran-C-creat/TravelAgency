@@ -6,7 +6,7 @@ using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Interfaces;
 using FluentAssertions;
 
-namespace TravelAgency.Tests.Handlers
+namespace TravelAgency.Tests.Handlers.QueryHandlers
 {
     public class GetEmployeeQueryHandlerTests
     {
