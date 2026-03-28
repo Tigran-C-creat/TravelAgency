@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using TravelAgency.Domain.Enums;
 
 namespace TravelAgency.Domain.Entities
 {
@@ -19,7 +20,7 @@ namespace TravelAgency.Domain.Entities
 
 
         [Column("status")]
-        public string Status { get; set; } = null!;
+        public EmployeeStatus Status { get; set; }
 
     }
 }

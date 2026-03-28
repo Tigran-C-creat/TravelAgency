@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using TravelAgency.Domain.Enums;
 
 namespace TravelAgency.Application.Commands.Employee
 {
@@ -13,6 +14,6 @@ namespace TravelAgency.Application.Commands.Employee
 
         public string Password { get; set; } = null!;
 
-        public string Status { get; set; } = null!;
+        public EmployeeStatus Status { get; set; }
     }
 }

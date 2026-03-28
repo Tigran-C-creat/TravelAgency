@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using TravelAgency.Domain.Entities;
+using TravelAgency.Domain.Enums;
 using TravelAgency.Domain.Interfaces;
-using FluentValidation;
 
 namespace TravelAgency.Application.Commands.Employee;
 
@@ -66,6 +67,10 @@ public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCo
 
         // Status
         RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status is required");
+            .IsInEnum().WithMessage("The specified employee status does not exist");
+
+        RuleFor(x => x.Status)
+            .NotEqual(EmployeeStatus.Blocked)
+            .WithMessage("Blocked employees cannot be created");
     }
 }

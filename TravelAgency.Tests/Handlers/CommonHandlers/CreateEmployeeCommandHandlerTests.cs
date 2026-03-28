@@ -2,6 +2,7 @@
 using Moq;
 using TravelAgency.Application.Commands.Employee;
 using TravelAgency.Domain.Entities;
+using TravelAgency.Domain.Enums;
 using TravelAgency.Domain.Interfaces;
 
 namespace TravelAgency.Tests.Handlers.CommonHandlers
@@ -39,7 +40,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "johndoe.com",
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             EmployeeEntity? savedEntity = null;
@@ -91,7 +92,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "Jane Smith",
                 Login = "janesmith",
                 Password = "pass456",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             Guid? generatedId = null;
@@ -128,7 +129,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "",
                 Login = "johndoe",
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             // Act & Assert
@@ -150,7 +151,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = new string('A', 101), // 101 символ (максимум 100)
                 Login = "johndoe",
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             // Act & Assert
@@ -172,7 +173,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "",
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             // Act & Assert
@@ -194,7 +195,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "ab", // 2 символа (минимум 3)
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             // Act & Assert
@@ -216,7 +217,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = new string('A', 51), // 51 символ (максимум 50)
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             // Act & Assert
@@ -238,7 +239,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "johndoe",
                 Password = "",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             // Act & Assert
@@ -260,7 +261,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "johndoe",
                 Password = "12345", // 5 символов (минимум 6)
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             // Act & Assert
@@ -269,12 +270,13 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Password must be at least 6 characters*");
         }
-     
+
         /// <summary>
-        /// Тест проверяет, что при валидации выбрасывается исключение, если Status пустой.
+        /// Тест проверяет, что при передаче несуществующего статуса
+        /// выбрасывается ошибка валидации.
         /// </summary>
         [Fact]
-        public async Task Handle_WithEmptyStatus_ShouldThrowValidationException()
+        public async Task Handle_WithInvalidStatus_ShouldThrowValidationException()
         {
             // Arrange
             var command = new CreateEmployeeCommand
@@ -282,14 +284,51 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "johndoe",
                 Password = "password123",
-                Status = ""
+                Status = (EmployeeStatus)2 // несуществующее значение
             };
 
-            // Act & Assert
+            // Act
             var act = () => _handler.Handle(command, CancellationToken.None);
 
-            await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Status is required*");
+            // Assert
+            await act.Should()
+                .ThrowAsync<FluentValidation.ValidationException>()
+                .WithMessage("*The specified employee status does not exist*");
+
+            // Репозиторий не должен вызываться
+            _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+
+        /// <summary>
+        /// Тест проверяет, что при попытке создать сотрудника
+        /// со статусом <see cref="EmployeeStatus.Blocked"/> 
+        /// выбрасывается исключение валидации.
+        /// </summary>
+        [Fact]
+        public async Task Handle_WithBlockedStatus_ShouldThrowValidationException()
+        {
+            // Arrange
+            var command = new CreateEmployeeCommand
+            {
+                FullName = "John Doe",
+                Login = "johndoe",
+                Password = "password123",
+                Status = EmployeeStatus.Blocked
+            };
+
+            // Act
+            var act = () => _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            await act.Should()
+                .ThrowAsync<FluentValidation.ValidationException>()
+                .WithMessage("*Blocked*");
+
+            // Проверяем, что репозиторий не был вызван
+            _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
         /// <summary>
@@ -304,7 +343,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "johndoe",
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             using var cts = new CancellationTokenSource();
@@ -339,7 +378,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John Doe",
                 Login = "johndoe",
                 Password = "password123",
-                Status = "Active"
+                Status = EmployeeStatus.Active
             };
 
             _repositoryMock
@@ -370,7 +409,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 FullName = "John O'Conner-Smith Jr.",
                 Login = "john.o'conner-smith",
                 Password = "P@ssw0rd!123",
-                Status = "Active-Pending"
+                Status = EmployeeStatus.Active
             };
 
             EmployeeEntity? savedEntity = null;
@@ -406,9 +445,9 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             // Arrange
             var commands = new List<CreateEmployeeCommand>
             {
-                new() { FullName = "Employee 1", Login = "emp1", Password = "pass11", Status = "Active" },
-                new() { FullName = "Employee 2", Login = "emp2", Password = "pass22", Status = "Active" },
-                new() { FullName = "Employee 3", Login = "emp3", Password = "pass33", Status = "Inactive" }
+                new() { FullName = "Employee 1", Login = "emp1", Password = "pass11", Status = EmployeeStatus.Active },
+                new() { FullName = "Employee 2", Login = "emp2", Password = "pass22", Status = EmployeeStatus.Active },
+                new() { FullName = "Employee 3", Login = "emp3", Password = "pass33", Status = EmployeeStatus.Active }
             };
 
             var createdIds = new List<Guid>();
