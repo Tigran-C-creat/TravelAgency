@@ -203,6 +203,10 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Login must be at least 3 characters*");
+
+            // Репозиторий не должен вызываться
+            _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
         /// <summary>
@@ -225,6 +229,10 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Login is too long*");
+
+            // Репозиторий не должен вызываться
+            _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
         /// <summary>
@@ -247,6 +255,10 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Password is required*");
+
+            // Репозиторий не должен вызываться
+            _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
         
         /// <summary>
@@ -269,6 +281,10 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Password must be at least 6 characters*");
+
+            // Репозиторий не должен вызываться
+            _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
         /// <summary>
