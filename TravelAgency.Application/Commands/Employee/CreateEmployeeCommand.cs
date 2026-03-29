@@ -4,7 +4,7 @@ using TravelAgency.Domain.Enums;
 namespace TravelAgency.Application.Commands.Employee
 {
     /// <summary>
-    /// Команда создания employee.
+    /// Команда создания сотрудника.
     /// </summary>
     public class CreateEmployeeCommand : IRequest<Guid>
     {
