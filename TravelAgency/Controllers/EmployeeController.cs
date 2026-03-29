@@ -30,10 +30,10 @@ namespace TravelAgency.Controllers
         }
 
         /// <summary>
-        /// Возвращает Employee по идентификатору
+        /// Возвращает сотрудника по идентификатору
         /// </summary>
         /// <param name="id">Идентификатор Employee</param>
-        [Authorize(Roles = TravelAgencyRole.ReadOrWrite)]
+        [Authorize(Roles = TravelAgencyRole.Read)]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(EmployeeDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -44,7 +44,7 @@ namespace TravelAgency.Controllers
         }
 
         /// <summary>
-        /// Cоздаёт employee
+        /// Cоздает сотрудника
         /// </summary>
         [Authorize(Roles = TravelAgencyRole.Write)]
         [HttpPost]
@@ -54,6 +54,24 @@ namespace TravelAgency.Controllers
         {
             var employeeId = await _mediator.Send(command, cancellationToken);
             return Created(employeeId.ToString(), employeeId);
+        }
+
+        /// <summary>
+        /// Обновляет status сотрудника
+        /// </summary>
+        [Authorize(Roles = TravelAgencyRole.Write)]
+        [HttpPatch("{id}/status")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateStatusAsync(Guid id, [FromBody] EmployeeStatus status, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new UpdateEmployeeStatusCommand
+            {
+                Id = id,
+                Status = status
+            }, cancellationToken);
+
+            return NoContent();
         }
     }
 }

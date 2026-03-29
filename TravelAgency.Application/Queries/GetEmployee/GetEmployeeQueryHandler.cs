@@ -36,6 +36,3 @@ namespace TravelAgency.Application.Queries.GetEmployee
         }
     }
 }
-
-
-//при обновлении сотрудника не забыть инвалидацию кеша - await _cache.RemoveAsync($"employee:{employeeId}"); 

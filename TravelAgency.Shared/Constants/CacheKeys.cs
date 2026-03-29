@@ -2,6 +2,6 @@
 {
     public static class CacheKeys
     {
-        public static string Employee(Guid id) => $"employee:string:{id}";
+        public static string Employee(Guid id) => $"employee:{id}";
     }
 }
