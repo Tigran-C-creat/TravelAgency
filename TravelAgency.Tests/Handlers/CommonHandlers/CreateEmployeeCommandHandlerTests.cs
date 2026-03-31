@@ -54,7 +54,6 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
                 .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
                 {
-                    Id = Guid.NewGuid(),
                     FullName = cmd.FullName,
                     Login = cmd.Login,
                     Password = cmd.Password,
@@ -117,7 +116,6 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
                 .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
                 {
-                    Id = Guid.NewGuid(),
                     FullName = cmd.FullName,
                     Login = cmd.Login,
                     Password = cmd.Password,
@@ -395,7 +393,6 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
                 .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
                 {
-                    Id = Guid.NewGuid(),
                     FullName = cmd.FullName,
                     Login = cmd.Login,
                     Password = cmd.Password,
@@ -433,6 +430,16 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             _repositoryMock
                 .Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new InvalidOperationException("Database connection failed"));
+
+            _mapperMock
+                .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
+                .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
+                {
+                    FullName = cmd.FullName,
+                    Login = cmd.Login,
+                    Password = cmd.Password,
+                    Status = cmd.Status
+                });
 
             // Act & Assert
             var act = () => Handler.Handle(command, CancellationToken.None);
@@ -472,7 +479,6 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
                 .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
                 {
-                    Id = Guid.NewGuid(),
                     FullName = cmd.FullName,
                     Login = cmd.Login,
                     Password = cmd.Password,
@@ -521,7 +527,6 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
                 .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
                 {
-                    Id = Guid.NewGuid(),
                     FullName = cmd.FullName,
                     Login = cmd.Login,
                     Password = cmd.Password,
