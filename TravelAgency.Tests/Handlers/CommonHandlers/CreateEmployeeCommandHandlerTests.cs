@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AutoMapper;
+using FluentAssertions;
 using Moq;
 using TravelAgency.Application.Commands.Employee;
 using TravelAgency.Domain.Entities;
@@ -9,17 +10,12 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
 {
     public class CreateEmployeeCommandHandlerTests
     {
-        private readonly Mock<IRedisCacheService> _cacheMock;
-        private readonly Mock<IRepository> _repositoryMock;
-        private readonly CreateEmployeeCommandHandler _handler;
+        private readonly Mock<IRedisCacheService> _cacheMock = new();
+        private readonly Mock<IRepository> _repositoryMock = new();
+        private readonly Mock<IMapper> _mapperMock = new();
 
-
-        public CreateEmployeeCommandHandlerTests()
-        {
-            _cacheMock = new Mock<IRedisCacheService>();
-            _repositoryMock = new Mock<IRepository>();
-            _handler = new CreateEmployeeCommandHandler(_repositoryMock.Object, _cacheMock.Object);
-        }
+        private CreateEmployeeCommandHandler Handler =>
+           new(_repositoryMock.Object, _cacheMock.Object, _mapperMock.Object);
 
         /// <summary>
         /// Тест проверяет успешное создание сотрудника при корректных данных.
@@ -54,8 +50,19 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
+            _mapperMock
+                .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
+                .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = cmd.FullName,
+                    Login = cmd.Login,
+                    Password = cmd.Password,
+                    Status = cmd.Status
+                });
+
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await Handler.Handle(command, CancellationToken.None);
 
             // Assert
             // Сначала проверяем, что savedEntity не null
@@ -106,8 +113,19 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
+            _mapperMock
+                .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
+                .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = cmd.FullName,
+                    Login = cmd.Login,
+                    Password = cmd.Password,
+                    Status = cmd.Status
+                });
+
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await Handler.Handle(command, CancellationToken.None);
 
             // Assert
             result.Should().NotBeEmpty();
@@ -133,7 +151,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Full name is required*");
@@ -155,7 +173,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Full name is too long*");
@@ -177,7 +195,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Login is required*");
@@ -199,7 +217,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Login must be at least 3 characters*");
@@ -225,7 +243,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Login is too long*");
@@ -251,7 +269,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Password is required*");
@@ -277,7 +295,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<FluentValidation.ValidationException>()
                 .WithMessage("*Password must be at least 6 characters*");
@@ -304,7 +322,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should()
@@ -335,7 +353,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             };
 
             // Act
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should()
@@ -373,8 +391,19 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(r => r.SaveChangesAsync(cancellationToken))
                 .Returns(Task.CompletedTask);
 
+            _mapperMock
+                .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
+                .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = cmd.FullName,
+                    Login = cmd.Login,
+                    Password = cmd.Password,
+                    Status = cmd.Status
+                });
+
             // Act
-            await _handler.Handle(command, cancellationToken);
+            await Handler.Handle(command, cancellationToken);
 
             // Assert
             _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), cancellationToken), Times.Once);
@@ -406,7 +435,7 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .ThrowsAsync(new InvalidOperationException("Database connection failed"));
 
             // Act & Assert
-            var act = () => _handler.Handle(command, CancellationToken.None);
+            var act = () => Handler.Handle(command, CancellationToken.None);
 
             await act.Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("Database connection failed");
@@ -439,8 +468,19 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
+            _mapperMock
+                .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
+                .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = cmd.FullName,
+                    Login = cmd.Login,
+                    Password = cmd.Password,
+                    Status = cmd.Status
+                });
+
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await Handler.Handle(command, CancellationToken.None);
 
             // Assert
             result.Should().NotBeEmpty();
@@ -477,10 +517,21 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
                 .Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
+            _mapperMock
+                .Setup(m => m.Map<EmployeeEntity>(It.IsAny<CreateEmployeeCommand>()))
+                .Returns((CreateEmployeeCommand cmd) => new EmployeeEntity
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = cmd.FullName,
+                    Login = cmd.Login,
+                    Password = cmd.Password,
+                    Status = cmd.Status
+                });
+
             // Act
             foreach (var command in commands)
             {
-                await _handler.Handle(command, CancellationToken.None);
+                await Handler.Handle(command, CancellationToken.None);
             }
 
             // Assert
