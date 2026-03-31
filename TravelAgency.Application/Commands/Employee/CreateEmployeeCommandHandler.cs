@@ -31,6 +31,11 @@ public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeComman
         // 1. Создаём сущность из команды
         var employee = _mapper.Map<EmployeeEntity>(request);
 
+        if (employee.Id == Guid.Empty)
+        {
+            employee.Id = Guid.NewGuid();
+        }
+
         // 2. Сохраняем в БД
         await _repository.AddAsync(employee, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);

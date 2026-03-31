@@ -12,8 +12,7 @@ namespace TravelAgency.Application.Profiles
         {
             CreateMap<EmployeeEntity, EmployeeDto>();
 
-            CreateMap<CreateEmployeeCommand, EmployeeEntity>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()));
+            CreateMap<CreateEmployeeCommand, EmployeeEntity>();
         }
     }
 }
