@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using MediatR;
 using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Enums;
@@ -10,13 +11,16 @@ public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeComman
 {
     private readonly IRepository _repository;
     private readonly IRedisCacheService _cache;
+    private readonly IMapper _mapper;
 
     public CreateEmployeeCommandHandler(
         IRepository repository,
-        IRedisCacheService cache)
+        IRedisCacheService cache,
+        IMapper mapper)
     {
         _repository = repository;
         _cache = cache;
+        _mapper = mapper;
     }
 
     public async Task<Guid> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
@@ -25,14 +29,7 @@ public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeComman
         CreateEmployeeCommandValidator.Default.ValidateAndThrow(request);
 
         // 1. Создаём сущность из команды
-        var employee = new EmployeeEntity
-        {
-            Id =  Guid.NewGuid(),
-            FullName = request.FullName,
-            Login = request.Login,
-            Password = request.Password,
-            Status = request.Status,
-        };
+        var employee = _mapper.Map<EmployeeEntity>(request);
 
         // 2. Сохраняем в БД
         await _repository.AddAsync(employee, cancellationToken);
