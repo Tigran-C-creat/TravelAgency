@@ -110,13 +110,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// ? Применение миграций при запуске
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<TravelAgencyContext>();
-    db.Database.Migrate();
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

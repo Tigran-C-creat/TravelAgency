@@ -11,7 +11,7 @@ using TravelAgency.Domain.Enums;
 namespace TravelAgency.Controllers
 {
     /// <summary>
-    /// Контроллер для работы с Employee
+    /// Контроллер для работы с сотрудниками.
     /// </summary>
     [ApiController]
     [Authorize]
