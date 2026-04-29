@@ -10,7 +10,6 @@ namespace TravelAgency.Application.Commands.Employee;
 public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeCommand, Guid>
 {
     private readonly IRepository _repository;
-    private readonly IRedisCacheService _cache;
     private readonly IMapper _mapper;
 
     public CreateEmployeeCommandHandler(
@@ -19,7 +18,6 @@ public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeComman
         IMapper mapper)
     {
         _repository = repository;
-        _cache = cache;
         _mapper = mapper;
     }
 
@@ -65,7 +63,8 @@ public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCo
         // Password
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required")
-            .MinimumLength(6).WithMessage("Password must be at least 6 characters");
+            .MinimumLength(6).WithMessage("Password must be at least 6 characters")
+            .MaximumLength(100).WithMessage("Password is too long");
 
         // Status
         RuleFor(x => x.Status)
