@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using TravelAgency.Application.Commands.Client;
+using TravelAgency.Application.DTOs.Response;
 using TravelAgency.Domain.Entities;
 
 namespace TravelAgency.Application.Profiles
@@ -8,8 +9,10 @@ namespace TravelAgency.Application.Profiles
     {
         public ClientProfile()
         {
+            CreateMap<ClientEntity, ClientDto>();
+
             CreateMap<CreateClientCommand, ClientEntity>()
-                /*.ForMember(x => x.Id, opt => opt.Ignore());*/ ;
+                .ForMember(x => x.Id, opt => opt.Ignore());
         }
     }
 }
