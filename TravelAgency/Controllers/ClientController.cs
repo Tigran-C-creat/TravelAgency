@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TravelAgency.Application.Commands.Client;
+using TravelAgency.Application.DTOs.Response;
+using TravelAgency.Application.Queries.GetClient;
 using TravelAgency.Domain.Enums;
 
 namespace TravelAgency.Controllers
@@ -24,6 +26,21 @@ namespace TravelAgency.Controllers
         public ClientController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        /// <summary>
+        /// Получает клиента по идентификатору.
+        /// </summary>
+        /// <param name="id">Идентификатор клиента</param>
+        /// <returns>Данные клиента</returns>
+        [Authorize(Roles = TravelAgencyRole.Read)]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ClientDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetClientById(Guid id, CancellationToken cancellationToken)
+        {
+            return Ok(await _mediator.Send(new GetClientByIdQuery(id), cancellationToken));
         }
 
         /// <summary>
