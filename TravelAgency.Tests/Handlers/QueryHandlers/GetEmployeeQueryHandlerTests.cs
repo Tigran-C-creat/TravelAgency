@@ -102,7 +102,6 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
             var employeeId = Guid.NewGuid();
             var query = new GetEmployeeQuery(employeeId);
             var cachedDto = new EmployeeDto { Id = employeeId, FullName = "Cached John" };
-            var expectedExpiry = ExpectedCacheExpiry;
 
             _cacheMock
                 .Setup(c => c.TryGetOrSetAsync(
