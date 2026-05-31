@@ -19,8 +19,10 @@ using TravelAgency.Persistence.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 builder.Services.AddControllers();
 
@@ -66,6 +68,7 @@ builder.Services.AddMediatR(cfg =>
                                     typeof(GetEmployeeQueryHandler).Assembly
       );
 });
+
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateEmployeeCommandHandler).Assembly));
 
