@@ -14,7 +14,6 @@ public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeComman
 
     public CreateEmployeeCommandHandler(
         IRepository repository,
-        IRedisCacheService cache,
         IMapper mapper)
     {
         _repository = repository;

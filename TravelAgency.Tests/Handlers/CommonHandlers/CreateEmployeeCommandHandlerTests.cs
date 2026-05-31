@@ -10,12 +10,11 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
 {
     public class CreateEmployeeCommandHandlerTests
     {
-        private readonly Mock<IRedisCacheService> _cacheMock = new();
         private readonly Mock<IRepository> _repositoryMock = new();
         private readonly Mock<IMapper> _mapperMock = new();
 
         private CreateEmployeeCommandHandler Handler =>
-           new(_repositoryMock.Object, _cacheMock.Object, _mapperMock.Object);
+           new(_repositoryMock.Object, _mapperMock.Object);
 
         /// <summary>
         /// Тест проверяет успешное создание сотрудника при корректных данных.
@@ -81,9 +80,6 @@ namespace TravelAgency.Tests.Handlers.CommonHandlers
             // Проверка вызовов репозитория
             _repositoryMock.Verify(r => r.AddAsync(It.IsAny<EmployeeEntity>(), It.IsAny<CancellationToken>()), Times.Once);
             _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-
-            // Кэш не должен очищаться при создании (это будет в тестах Update/Delete)
-            _cacheMock.VerifyNoOtherCalls();
         }
 
         /// <summary>
