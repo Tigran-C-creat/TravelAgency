@@ -1,4 +1,6 @@
-﻿using TravelAgency.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using TravelAgency.Domain.Entities;
+using TravelAgency.Domain.Interfaces;
 using TravelAgency.Shared.Exeptions;
 
 namespace TravelAgency.Persistence.Repositories
@@ -28,6 +30,21 @@ namespace TravelAgency.Persistence.Repositories
                 throw new NotFoundException($"{typeof(T).Name} with ID {id} not found.");
 
             return entity;
+        }
+
+
+        public async Task<ClientEntity> GetClientWithVacationsAsync(Guid id, CancellationToken? cancellationToken = null)
+        {
+            var token = cancellationToken ?? CancellationToken.None;
+
+            var client = await _context.Clients
+                .Include(c => c.Vacations)
+                .FirstOrDefaultAsync(c => c.Id == id, token);
+
+            if (client == null)
+                throw new NotFoundException($"Client with ID {id} not found.");
+
+            return client;
         }
 
         public async Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class

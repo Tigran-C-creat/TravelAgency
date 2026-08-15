@@ -47,7 +47,19 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
             var query = new GetClientByIdQuery(clientId);
 
             var entity = new ClientEntity { Id = clientId, FullName = "John Doe" };
-            var dto = new ClientDto(clientId, "John Doe", "+1234567", "john@mail.com", "john", null);
+
+            var vacations = new List<VacationInfoDto>
+                {
+                    new VacationInfoDto(
+                        Guid.NewGuid(),
+                        "Test Vacation",
+                        DateTime.UtcNow,
+                        DateTime.UtcNow.AddDays(7),
+                        1000
+                    )
+                };
+
+            var dto = new ClientDto(clientId, "John Doe", "+1234567", "john@mail.com", "john", null, vacations);
 
             _cacheMock
                 .Setup(c => c.TryGetOrSetAsync(
@@ -57,7 +69,7 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
                 .Returns<string, Func<Task<ClientDto>>, TimeSpan>((key, factory, _) => factory());
 
             _repositoryMock
-                .Setup(r => r.GetOrThrowAsync<ClientEntity>(clientId, It.IsAny<CancellationToken>()))
+                .Setup(r => r.GetClientWithVacationsAsync(clientId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(entity);
 
             _mapperMock
@@ -71,7 +83,7 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(dto);
 
-            _repositoryMock.Verify(r => r.GetOrThrowAsync<ClientEntity>(clientId, It.IsAny<CancellationToken>()), Times.Once);
+            _repositoryMock.Verify(r => r.GetClientWithVacationsAsync(clientId, It.IsAny<CancellationToken>()), Times.Once);
             _mapperMock.Verify(m => m.Map<ClientDto>(entity), Times.Once);
 
             _cacheMock.Verify(c => c.TryGetOrSetAsync(
@@ -96,7 +108,20 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
             // Arrange
             var clientId = Guid.NewGuid();
             var query = new GetClientByIdQuery(clientId);
-            var cachedDto = new ClientDto(clientId, "Cached John", "+1234567", "cached@mail.com", "cached", null);
+
+            var vacations = new List<VacationInfoDto>
+                {
+                    new VacationInfoDto(
+                        Guid.NewGuid(),
+                        "Test Vacation",
+                        DateTime.UtcNow,
+                        DateTime.UtcNow.AddDays(7),
+                        1000
+                    )
+                };
+
+
+            var cachedDto = new ClientDto(clientId, "Cached John", "+1234567", "cached@mail.com", "cached", null, vacations);
 
             _cacheMock
                 .Setup(c => c.TryGetOrSetAsync(
@@ -111,7 +136,7 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
             // Assert
             result.Should().BeEquivalentTo(cachedDto);
 
-            _repositoryMock.Verify(r => r.GetOrThrowAsync<ClientEntity>(
+            _repositoryMock.Verify(r => r.GetClientWithVacationsAsync(
                 It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
 
             _mapperMock.Verify(m => m.Map<ClientDto>(It.IsAny<ClientEntity>()), Times.Never);
@@ -129,13 +154,25 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
         {
             // Arrange
             var clientId = Guid.NewGuid();
+
+            var vacations = new List<VacationInfoDto>
+                {
+                    new VacationInfoDto(
+                        Guid.NewGuid(),
+                        "Test Vacation",
+                        DateTime.UtcNow,
+                        DateTime.UtcNow.AddDays(7),
+                        1000
+                    )
+                };
+
             var query = new GetClientByIdQuery(clientId);
 
             using var cts = new CancellationTokenSource();
             var token = cts.Token;
 
             var entity = new ClientEntity { Id = clientId };
-            var dto = new ClientDto(clientId, "John", "+123", "mail@mail.com", "login", null);
+            var dto = new ClientDto(clientId, "John", "+123", "mail@mail.com", "login", null, vacations);
 
             _cacheMock
                 .Setup(c => c.TryGetOrSetAsync(
@@ -145,7 +182,7 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
                 .Returns<string, Func<Task<ClientDto>>, TimeSpan>((key, factory, _) => factory());
 
             _repositoryMock
-                .Setup(r => r.GetOrThrowAsync<ClientEntity>(clientId, token))
+                .Setup(r => r.GetClientWithVacationsAsync(clientId, token))
                 .ReturnsAsync(entity);
 
             _mapperMock
@@ -156,7 +193,7 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
             await _handler.Handle(query, token);
 
             // Assert
-            _repositoryMock.Verify(r => r.GetOrThrowAsync<ClientEntity>(clientId, token), Times.Once);
+            _repositoryMock.Verify(r => r.GetClientWithVacationsAsync(clientId, token), Times.Once);
         }
 
         /// <summary>
@@ -182,7 +219,7 @@ namespace TravelAgency.Tests.Handlers.QueryHandlers
                 .Returns<string, Func<Task<ClientDto>>, TimeSpan>((key, factory, _) => factory());
 
             _repositoryMock
-                .Setup(r => r.GetOrThrowAsync<ClientEntity>(clientId, It.IsAny<CancellationToken>()))
+                .Setup(r => r.GetClientWithVacationsAsync(clientId, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new KeyNotFoundException("Client not found"));
 
             // Act

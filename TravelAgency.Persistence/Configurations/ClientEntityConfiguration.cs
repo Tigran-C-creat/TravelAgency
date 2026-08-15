@@ -21,7 +21,25 @@ namespace TravelAgency.Persistence.Configurations
             builder
                 .HasMany(c => c.Vacations)
                 .WithMany(v => v.Clients)
-                .UsingEntity(j => j.ToTable("vacation_clients"));
+                .UsingEntity<Dictionary<string, object>>(
+                    "vacation_clients",
+                    j => j
+                        .HasOne<VacationEntity>()
+                        .WithMany()
+                        .HasForeignKey("vacation_id")
+                        .HasConstraintName("fk_vacation_clients_vacation_id")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j => j
+                        .HasOne<ClientEntity>()
+                        .WithMany()
+                        .HasForeignKey("client_id")
+                        .HasConstraintName("fk_vacation_clients_client_id")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.ToTable("vacation_clients");
+                        j.HasKey("client_id", "vacation_id");
+                    });
         }
     }
 }

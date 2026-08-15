@@ -6,6 +6,7 @@
       string Phone,
       string Email,
       string Login,
-      Guid? CompanyId
+      Guid? CompanyId,
+      List<VacationInfoDto> Vacations
   );
 }
