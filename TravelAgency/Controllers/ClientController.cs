@@ -29,7 +29,7 @@ namespace TravelAgency.Controllers
         }
 
         /// <summary>
-        /// Получает клиента по идентификатору.
+        /// Получает клиента по идентификатору, в т.ч. списка его Отпусков.
         /// </summary>
         /// <param name="id">Идентификатор клиента</param>
         /// <returns>Данные клиента</returns>
@@ -38,7 +38,7 @@ namespace TravelAgency.Controllers
         [ProducesResponseType(typeof(ClientDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetClientById(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetClientWithVacationsAsync(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetClientByIdQuery(id), cancellationToken));
         }

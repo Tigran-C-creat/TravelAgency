@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using TravelAgency.Application.DTOs.Response;
-using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Interfaces;
 using TravelAgency.Shared.Constants;
 
@@ -28,8 +27,11 @@ namespace TravelAgency.Application.Queries.GetClient
                 cacheKey,
                 async () =>
                 {
-                    var client = await _repository.GetOrThrowAsync<ClientEntity>(request.Id, cancellationToken);
-                    return _mapper.Map<ClientDto?>(client);
+                    // Загружаем клиента вместе с его отпусками
+                    var client = await _repository.GetClientWithVacationsAsync(request.Id, cancellationToken);
+
+                    // Маппим в DTO
+                    return _mapper.Map<ClientDto>(client);
                 },
                 TimeSpan.FromHours(10)
             );

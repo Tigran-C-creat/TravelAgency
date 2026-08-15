@@ -1,4 +1,6 @@
-﻿namespace TravelAgency.Domain.Interfaces
+﻿using TravelAgency.Domain.Entities;
+
+namespace TravelAgency.Domain.Interfaces
 {
     /// <summary>
     /// Интерфейс репозитория.
@@ -17,6 +19,8 @@
 
         Task<T> GetOrThrowAsync<T>(Guid id, CancellationToken? cancellationToken = null) 
             where T : class;
+
+        Task<ClientEntity> GetClientWithVacationsAsync(Guid id, CancellationToken? cancellationToken = null);
 
         Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) 
             where T : class;
