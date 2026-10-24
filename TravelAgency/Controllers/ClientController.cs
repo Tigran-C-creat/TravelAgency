@@ -57,5 +57,20 @@ namespace TravelAgency.Controllers
             var clientid = await _mediator.Send(command, cancellationToken);
             return StatusCode(201, clientid); 
         }
+
+        /// <summary>
+        /// Обновляет данные клиента
+        /// </summary>
+        [Authorize(Roles = TravelAgencyRole.Write)]
+        [HttpPatch]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateClient([FromBody] UpdateClientCommand command, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
     }
 }
