@@ -55,19 +55,14 @@ namespace TravelAgency.Application.Commands.Client
 
             //PassportSeries
             RuleFor(x => x.PassportSeries)
-               .NotEmpty().WithMessage("Passport series is required")
-               .Length(4).WithMessage("Passport series must contain exactly 4 characters")
-               .Matches("^[0-9]{4}$").WithMessage("Passport series must contain only digits");
+              .Matches("^[0-9]{4}$").WithMessage("Passport series must be exactly 4 digits");
 
             //PassportNumber
             RuleFor(x => x.PassportNumber)
-               .NotEmpty().WithMessage("Passport number is required")
-               .Length(6).WithMessage("Passport number must contain exactly 6 characters")
-               .Matches("^[0-9]{6}$").WithMessage("Passport number must contain only digits");
+               .Matches("^[0-9]{6}$").WithMessage("Passport number must be exactly 6 digits");
 
             //Phone
             RuleFor(x => x.Phone)
-                .NotEmpty().WithMessage("Phone number is required")
                 .Matches(@"^\+?[0-9]{7,15}$")
                 .WithMessage("Phone number must contain 7–15 digits and may start with +");
 
@@ -78,13 +73,11 @@ namespace TravelAgency.Application.Commands.Client
 
             //Login
             RuleFor(x => x.Login)
-                .NotEmpty().WithMessage("Login is required")
                 .MinimumLength(3).WithMessage("Login must be at least 3 characters")
                 .MaximumLength(50).WithMessage("Login is too long");
 
             //Password
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required")
                 .MinimumLength(6).WithMessage("Password must be at least 6 characters")
                 .MaximumLength(100).WithMessage("Password is too long");
         }

@@ -67,6 +67,7 @@ namespace TravelAgency.Application.Commands.Client
         {
             // FullName
             RuleFor(x => x.FullName)
+                .NotEmpty().WithMessage("Full name is required")
                 .MaximumLength(100).WithMessage("Full name is too long")
                 .When(x => x.FullName is not null);
 

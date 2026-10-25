@@ -210,7 +210,7 @@ public class CreateClientCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport series is required*");
+                .WithMessage("*Passport series must be exactly 4 digits*");
     }
 
     /// <summary>
@@ -236,7 +236,7 @@ public class CreateClientCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport series must contain exactly 4 characters*");
+                .WithMessage("*Passport series must be exactly 4 digits*");
     }
 
     /// <summary>
@@ -262,7 +262,7 @@ public class CreateClientCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport series must contain exactly 4 characters*");
+                .WithMessage("*Passport series must be exactly 4 digits*");
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ public class CreateClientCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport series must contain only digits*");
+                .WithMessage("*Passport series must be exactly 4 digits*");
     }
 
     /// <summary>
@@ -313,7 +313,7 @@ public class CreateClientCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport number is required*");
+                .WithMessage("*Passport number must be exactly 6 digits*");
     }
 
     /// <summary>
@@ -337,7 +337,7 @@ public class CreateClientCommandHandlerTests
         var act = () => Handler.Handle(command, CancellationToken.None);
 
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport number must contain exactly 6 characters*");
+                .WithMessage("*Passport number must be exactly 6 digits*");
     }
 
     /// <summary>
@@ -361,7 +361,7 @@ public class CreateClientCommandHandlerTests
         var act = () => Handler.Handle(command, CancellationToken.None);
 
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport number must contain exactly 6 characters*");
+                .WithMessage("*Passport number must be exactly 6 digits*");
     }
 
 
@@ -386,7 +386,7 @@ public class CreateClientCommandHandlerTests
         var act = () => Handler.Handle(command, CancellationToken.None);
 
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Passport number must contain only digits*");
+                .WithMessage("*Passport number must be exactly 6 digits*");
     }
 
     /// <summary>
@@ -410,7 +410,7 @@ public class CreateClientCommandHandlerTests
         var act = () => Handler.Handle(command, CancellationToken.None);
 
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Phone number is required*");
+                .WithMessage("*Phone number must contain 7–15 digits and may start with +*");
 
     }
 
@@ -534,7 +534,7 @@ public class CreateClientCommandHandlerTests
         var act = () => Handler.Handle(command, CancellationToken.None);
 
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Login is required*");
+                .WithMessage("*Login must be at least 3 characters*");
     }
 
     /// <summary>
@@ -608,7 +608,7 @@ public class CreateClientCommandHandlerTests
         var act = () => Handler.Handle(command, CancellationToken.None);
 
         await act.Should().ThrowAsync<FluentValidation.ValidationException>()
-                .WithMessage("*Password is required*");
+                .WithMessage("*Password must be at least 6 characters*");
     }
 
     /// <summary>
