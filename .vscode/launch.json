@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET: TravelAgency (local app, Docker DB and Redis)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "prepare: TravelAgency (local app + Docker dependencies)",
+      "program": "${workspaceFolder}/TravelAgency/bin/Debug/net6.0/TravelAgency.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/TravelAgency",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5156",
+        "ConnectionStrings__DefaultConnection": "Host=localhost;Port=5433;Database=travel;Username=postgres;Password=password",
+        "Redis__Connection": "localhost:6379"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s/swagger"
+      }
+    }
+  ]
+}

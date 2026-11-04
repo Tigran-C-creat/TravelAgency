@@ -28,7 +28,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddHealthChecks();
 
-// ��������� �������������� (��������, JWT)
+// Настраиваем аутентификацию с использованием JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -49,7 +49,7 @@ builder.Services.Configure<JwtOptions>(
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
-// ���������� �����������
+// Настраиваем авторизацию для ролей чтения и записи
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireReadRole", policy =>
@@ -58,7 +58,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole(TravelAgency.Domain.Enums.TravelAgencyRole.Write));
 });
 
-// ������������ �������� ���� ������ � ���������, ��� ���������� PostgreSQL
+// Регистрируем контекст базы данных и настраиваем подключение к PostgreSQL
 builder.Services.AddDbContext<TravelAgencyContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -90,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "������� ����� JWT � ��������� Bearer",
+        Description = "Введите JWT-токен в формате: Bearer {токен}",
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });

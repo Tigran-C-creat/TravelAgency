@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "docker: start TravelAgency dependencies",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/.vscode/start-dependencies.ps1"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dotnet: build TravelAgency",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/TravelAgency/TravelAgency.csproj",
+        "--configuration",
+        "Debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "prepare: TravelAgency (local app + Docker dependencies)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "docker: start TravelAgency dependencies",
+        "dotnet: build TravelAgency"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
