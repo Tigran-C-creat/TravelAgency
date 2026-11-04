@@ -28,7 +28,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddHealthChecks();
 
-// Настройка аутентификации (например, JWT)
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -49,7 +49,7 @@ builder.Services.Configure<JwtOptions>(
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
-// Добавление авторизации
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireReadRole", policy =>
@@ -58,7 +58,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole(TravelAgency.Domain.Enums.TravelAgencyRole.Write));
 });
 
-// Регистрируем контекст базы данных и указываем, что используем PostgreSQL
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ PostgreSQL
 builder.Services.AddDbContext<TravelAgencyContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -76,7 +76,7 @@ builder.Services.AddScoped<IRepository, EfRepository>();
 
 builder.Services.AddAutoMapper(typeof(EmployeeProfile));
 
-var redisConnection = builder.Configuration["Redis__Connection"] ?? throw new InvalidOperationException("Redis connection string is not configured.");
+var redisConnection = builder.Configuration["Redis:Connection"] ?? throw new InvalidOperationException("Redis connection string is not configured.");
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     ConnectionMultiplexer.Connect(redisConnection));
@@ -90,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Введите токен JWT с префиксом Bearer",
+        Description = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ JWT пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Bearer",
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
