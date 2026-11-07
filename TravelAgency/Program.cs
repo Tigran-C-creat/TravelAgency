@@ -28,7 +28,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddHealthChecks();
 
-// Настройка аутентификации (например, JWT)
+// РќР°СЃС‚СЂР°РёРІР°РµРј Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёСЋ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -49,7 +49,7 @@ builder.Services.Configure<JwtOptions>(
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
-// Добавление авторизации
+// РќР°СЃС‚СЂР°РёРІР°РµРј Р°РІС‚РѕСЂРёР·Р°С†РёСЋ РґР»СЏ СЂРѕР»РµР№ С‡С‚РµРЅРёСЏ Рё Р·Р°РїРёСЃРё
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireReadRole", policy =>
@@ -58,7 +58,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole(TravelAgency.Domain.Enums.TravelAgencyRole.Write));
 });
 
-// Регистрируем контекст базы данных и указываем, что используем PostgreSQL
+// Р РµРіРёСЃС‚СЂРёСЂСѓРµРј РєРѕРЅС‚РµРєСЃС‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С… Рё РЅР°СЃС‚СЂР°РёРІР°РµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє PostgreSQL
 builder.Services.AddDbContext<TravelAgencyContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -76,7 +76,7 @@ builder.Services.AddScoped<IRepository, EfRepository>();
 
 builder.Services.AddAutoMapper(typeof(EmployeeProfile));
 
-var redisConnection = builder.Configuration["Redis__Connection"] ?? throw new InvalidOperationException("Redis connection string is not configured.");
+var redisConnection = builder.Configuration["Redis:Connection"] ?? throw new InvalidOperationException("Redis connection string is not configured.");
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     ConnectionMultiplexer.Connect(redisConnection));
@@ -90,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Введите токен JWT с префиксом Bearer",
+        Description = "Р’РІРµРґРёС‚Рµ JWT-С‚РѕРєРµРЅ РІ С„РѕСЂРјР°С‚Рµ: Bearer {С‚РѕРєРµРЅ}",
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
