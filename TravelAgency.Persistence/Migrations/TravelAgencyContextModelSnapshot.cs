@@ -175,8 +175,11 @@ namespace TravelAgency.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("client_id");
+
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("message");
 
@@ -189,6 +192,8 @@ namespace TravelAgency.Persistence.Migrations
                         .HasColumnName("vacation_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("VacationId");
 
@@ -232,11 +237,19 @@ namespace TravelAgency.Persistence.Migrations
 
             modelBuilder.Entity("TravelAgency.Domain.Entities.VacationRequestEntity", b =>
                 {
+                    b.HasOne("TravelAgency.Domain.Entities.ClientEntity", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TravelAgency.Domain.Entities.VacationEntity", "Vacation")
                         .WithMany()
                         .HasForeignKey("VacationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Client");
 
                     b.Navigation("Vacation");
                 });

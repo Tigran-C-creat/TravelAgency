@@ -16,6 +16,11 @@ namespace TravelAgency.Persistence.Configurations
                 .HasOne(vr => vr.Vacation)
                 .WithMany() // если у Vacation нет коллекции запросов
                 .HasForeignKey(vr => vr.VacationId);
+
+            builder
+                .HasOne(x => x.Client)
+                .WithMany()
+                .HasForeignKey(x => x.ClientId);
         }
     }
 }
