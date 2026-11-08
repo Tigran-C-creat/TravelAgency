@@ -9,15 +9,20 @@ namespace TravelAgency.Domain.Entities
         [Column("id")]
         public Guid Id { get; set; }
 
+        [Column("client_id")]
+        public Guid ClientId { get; set; }
+
         [Column("vacation_id")]
         public Guid VacationId { get; set; }
 
         [Column("status")]
-        public VacationRequestStatus Status { get; set; }
+        public VacationRequestStatus Status { get; set; } = VacationRequestStatus.New;
 
         [Column("message")]
-        public string Message { get; set; } = null!;
+        public string? Message { get; set; }
 
         public VacationEntity Vacation { get; set; } = null!;
+
+        public ClientEntity Client { get; set; } = null!;
     }
 }
