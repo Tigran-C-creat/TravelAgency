@@ -47,6 +47,17 @@ namespace TravelAgency.Persistence.Repositories
             return client;
         }
 
+        /// <summary>
+        /// Получает все сущности указанного типа без отслеживания изменений.
+        /// </summary>
+        /// <typeparam name="T">Тип сущности</typeparam>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Список сущностей</returns>
+        public async Task<List<T>> GetAllAsync<T>(CancellationToken cancellationToken = default) where T : class
+        {
+            return await _context.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
+        }
+
         public async Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
         {
             await _context.Set<T>().AddAsync(entity, cancellationToken);
