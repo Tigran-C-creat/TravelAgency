@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TravelAgency.Domain.Enums
+﻿namespace TravelAgency.Domain.Enums
 {
+    /// <summary>
+    /// Статус заявки на отпуск.
+    /// </summary>
     public enum VacationRequestStatus
     {
         New = 0,         // Новая

@@ -4,6 +4,9 @@ using TravelAgency.Domain.Entities;
 
 namespace TravelAgency.Persistence.Configurations
 {
+    /// <summary>
+    /// Конфигурация сущности заявки на отпуск.
+    /// </summary>
     public class VacationRequestEntityConfiguration : IEntityTypeConfiguration<VacationRequestEntity>
     {
         public void Configure(EntityTypeBuilder<VacationRequestEntity> builder)
@@ -17,6 +20,7 @@ namespace TravelAgency.Persistence.Configurations
                 .WithMany() // если у Vacation нет коллекции запросов
                 .HasForeignKey(vr => vr.VacationId);
 
+            // VacationRequest → Client (many-to-one)
             builder
                 .HasOne(x => x.Client)
                 .WithMany()

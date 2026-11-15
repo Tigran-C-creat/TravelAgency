@@ -26,5 +26,12 @@ namespace TravelAgency.Domain.Interfaces
             where T : class;
 
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Получает все сущности указанного типа.
+        /// </summary>
+        /// <typeparam name="T">Тип сущности</typeparam>
+        Task<List<T>> GetAllAsync<T>(CancellationToken cancellationToken = default) 
+            where T : class;
     }
 }
