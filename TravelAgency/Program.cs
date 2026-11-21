@@ -15,6 +15,7 @@ using TravelAgency.Infrastructure.Services;
 using TravelAgency.Middleware;
 using TravelAgency.Persistence;
 using TravelAgency.Persistence.Repositories;
+using TravelAgency.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,9 @@ builder.Services.Configure<JwtOptions>(
     builder.Configuration.GetSection("Jwt"));
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Настраиваем авторизацию для ролей чтения и записи
 builder.Services.AddAuthorization(options =>

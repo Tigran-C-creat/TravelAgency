@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TravelAgency.Application.Commands.VacationRequest;
 using TravelAgency.Application.DTOs.Response;
 using TravelAgency.Application.Queries.GetVacationRequest;
 using TravelAgency.Domain.Enums;
@@ -40,5 +41,19 @@ public class VacationRequestController : ControllerBase
             new GetVacationRequestsQuery(), cancellationToken);
 
         return Ok(requests);
+    }
+    /// <summary>
+    /// Создает заявку на отпуск.
+    /// </summary>  
+    [Authorize(Roles = "Client")]
+    [HttpPost]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]   
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateVacationRequestAsync([FromBody] CreateVacationRequestCommand command, CancellationToken cancellationToken)
+    {
+        var vacationRequestId = await _mediator.Send(command, cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, vacationRequestId); 
     }
 }

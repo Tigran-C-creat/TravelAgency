@@ -3,6 +3,7 @@ using FluentValidation;
 using MediatR;
 using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Interfaces;
+using TravelAgency.Application.Interfaces;
 
 namespace TravelAgency.Application.Commands.Client
 {
@@ -10,14 +11,17 @@ namespace TravelAgency.Application.Commands.Client
     {
         private readonly IRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IPasswordService? _passwordService;
         //private readonly IAccessService _access;
 
         public CreateClientCommandHandler(
             IRepository repository,
-            IMapper mapper)
+            IMapper mapper,
+            IPasswordService? passwordService = null)
         {
             _repository = repository;
             _mapper = mapper;
+            _passwordService = passwordService;
         }
 
         public async Task<Guid> Handle(CreateClientCommand request, CancellationToken cancellationToken)
@@ -30,6 +34,8 @@ namespace TravelAgency.Application.Commands.Client
 
             // 3. Маппинг
             var entity = _mapper.Map<ClientEntity>(request);
+            if (_passwordService != null)
+                entity.Password = _passwordService.Hash(request.Password);
 
             if (entity.Id == Guid.Empty)
                 entity.Id = Guid.NewGuid();

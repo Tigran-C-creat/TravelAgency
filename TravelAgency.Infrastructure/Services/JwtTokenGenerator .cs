@@ -17,13 +17,22 @@ namespace TravelAgency.Infrastructure.Services
             _options = options.Value;
         }
 
-        public string GenerateToken(string username, List<string> roles)
+        public string GenerateToken(string username, List<string> roles) =>
+            GenerateTokenCore(username, roles, null);
+
+        public string GenerateToken(string username, List<string> roles, Guid clientId) =>
+            GenerateTokenCore(username, roles, clientId);
+
+        private string GenerateTokenCore(string username, List<string> roles, Guid? clientId)
         {
             var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+            if (clientId.HasValue)
+                claims.Add(new Claim("client_id", clientId.Value.ToString()));
 
             foreach (var role in roles)
             {

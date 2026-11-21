@@ -4,6 +4,7 @@ using MediatR;
 using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Enums;
 using TravelAgency.Domain.Interfaces;
+using TravelAgency.Application.Interfaces;
 
 namespace TravelAgency.Application.Commands.Employee;
 
@@ -11,13 +12,16 @@ public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeComman
 {
     private readonly IRepository _repository;
     private readonly IMapper _mapper;
+    private readonly IPasswordService? _passwordService;
 
     public CreateEmployeeCommandHandler(
         IRepository repository,
-        IMapper mapper)
+        IMapper mapper,
+        IPasswordService? passwordService = null)
     {
         _repository = repository;
         _mapper = mapper;
+        _passwordService = passwordService;
     }
 
     public async Task<Guid> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
@@ -27,6 +31,8 @@ public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeComman
 
         // 1. Создаём сущность из команды
         var employee = _mapper.Map<EmployeeEntity>(request);
+        if (_passwordService != null)
+            employee.Password = _passwordService.Hash(request.Password);
 
         if (employee.Id == Guid.Empty)
         {
