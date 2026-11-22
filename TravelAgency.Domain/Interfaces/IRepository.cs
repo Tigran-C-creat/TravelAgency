@@ -22,6 +22,10 @@ namespace TravelAgency.Domain.Interfaces
 
         Task<ClientEntity> GetClientWithVacationsAsync(Guid id, CancellationToken? cancellationToken = null);
 
+        Task<ClientEntity?> GetClientByLoginAsync(string login, CancellationToken cancellationToken = default);
+
+        Task<EmployeeEntity?> GetEmployeeByLoginAsync(string login, CancellationToken cancellationToken = default);
+
         Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) 
             where T : class;
 

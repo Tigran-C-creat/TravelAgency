@@ -1,5 +1,7 @@
-﻿using FluentValidation;
+﻿using System.Reflection;
+using FluentValidation;
 using MediatR;
+using TravelAgency.Application.Interfaces;
 using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Interfaces;
 using TravelAgency.Shared.Constants;
@@ -12,10 +14,13 @@ namespace TravelAgency.Application.Commands.Client
         private readonly IRepository _repository;
         private readonly IRedisCacheService _cache;
 
-        public UpdateClientCommandHandler(IRepository repository, IRedisCacheService cache)
+        private readonly IPasswordService _passwordService;
+
+        public UpdateClientCommandHandler(IRepository repository, IRedisCacheService cache, IPasswordService passwordService)
         {
             _repository = repository;
             _cache = cache;
+            _passwordService = passwordService;
         }
 
         public async Task Handle(UpdateClientCommand request, CancellationToken cancellationToken)
@@ -34,7 +39,9 @@ namespace TravelAgency.Application.Commands.Client
             Apply(request.Phone, v => client.Phone = v);
             Apply(request.Email, v => client.Email = v);
             Apply(request.Login, v => client.Login = v);
-            Apply(request.Password, v => client.Password = v);
+           
+           if (request.Password is not null)
+                client.Password = _passwordService.Hash(request.Password);
 
             if (request.CompanyId.HasValue)
             {

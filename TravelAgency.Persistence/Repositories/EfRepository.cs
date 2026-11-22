@@ -47,6 +47,12 @@ namespace TravelAgency.Persistence.Repositories
             return client;
         }
 
+        public Task<ClientEntity?> GetClientByLoginAsync(string login, CancellationToken cancellationToken = default) =>
+            _context.Clients.FirstOrDefaultAsync(c => c.Login == login, cancellationToken);
+
+        public Task<EmployeeEntity?> GetEmployeeByLoginAsync(string login, CancellationToken cancellationToken = default) =>
+            _context.Employees.FirstOrDefaultAsync(e => e.Login == login, cancellationToken);
+
         /// <summary>
         /// Получает все сущности указанного типа без отслеживания изменений.
         /// </summary>
