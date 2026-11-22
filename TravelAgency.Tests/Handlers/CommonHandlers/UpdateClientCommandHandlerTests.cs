@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using TravelAgency.Application.Commands.Client;
+using TravelAgency.Application.Interfaces;
 using TravelAgency.Domain.Entities;
 using TravelAgency.Domain.Interfaces;
 using TravelAgency.Shared.Constants;
@@ -12,9 +13,10 @@ public class UpdateClientCommandHandlerTests
 {
     private readonly Mock<IRepository> _repositoryMock = new();
     private readonly Mock<IRedisCacheService> _cacheMock = new();
+    private readonly Mock<IPasswordService> _passwordServiceMock = new();
 
     private UpdateClientCommandHandler Handler =>
-        new(_repositoryMock.Object, _cacheMock.Object);
+        new(_repositoryMock.Object, _cacheMock.Object, _passwordServiceMock.Object);
 
     //Ещё вариант — сделать его фабрикой с базовыми значениями и переопределять нужные поля,
     private static UpdateClientCommand CreateCommand(
@@ -93,6 +95,40 @@ public class UpdateClientCommandHandlerTests
 
         _cacheMock.Verify(
             c => c.RemoveAsync(CacheKeys.Client(clientId)), Times.Once);
+
+        _passwordServiceMock.Verify(
+            p => p.Hash(It.IsAny<string>()), Times.Never);
+    }
+
+    /// <summary>
+    /// Проверяет, что переданный новый пароль хешируется и в клиент сохраняется хеш.
+    /// </summary>
+    [Fact]
+    public async Task Handle_WithPassword_ShouldHashAndUpdatePassword()
+    {
+        var clientId = Guid.NewGuid();
+        const string plainPassword = "new-password";
+        const string hashedPassword = "hashed-password";
+        var command = CreateCommand(id: clientId, password: plainPassword);
+        var client = new ClientEntity { Id = clientId, Password = "old-hash" };
+
+        _repositoryMock
+            .Setup(r => r.GetOrThrowAsync<ClientEntity>(clientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(client);
+        _repositoryMock
+            .Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _cacheMock
+            .Setup(c => c.RemoveAsync(CacheKeys.Client(clientId)))
+            .Returns(Task.CompletedTask);
+        _passwordServiceMock
+            .Setup(p => p.Hash(plainPassword))
+            .Returns(hashedPassword);
+
+        await Handler.Handle(command, CancellationToken.None);
+
+        client.Password.Should().Be(hashedPassword);
+        _passwordServiceMock.Verify(p => p.Hash(plainPassword), Times.Once);
     }
 
     /// <summary>
