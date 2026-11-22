@@ -42,10 +42,11 @@ public class VacationRequestController : ControllerBase
 
         return Ok(requests);
     }
+
     /// <summary>
     /// Создает заявку на отпуск.
     /// </summary>  
-    [Authorize(Roles = "Client")]
+    [Authorize(Roles = TravelAgencyRole.Write)]
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]   
